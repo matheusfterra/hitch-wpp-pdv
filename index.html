@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hitch — Seu Conselheiro Amoroso no WhatsApp</title>
+  <meta name="description" content="O unico conselheiro que analisa suas conversas em tempo real e te diz exatamente o que responder. 24h no WhatsApp.">
+  <link rel="icon" type="image/svg+xml" href="https://cdn.digital-ai.tech/uploads/media-cortex/hitch/favicon.svg">
+  <link rel="shortcut icon" href="https://cdn.digital-ai.tech/uploads/media-cortex/hitch/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ═══ GOOGLE ANALYTICS 4 ═══════════════════════════════════════ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-24JQNP0B8R"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-24JQNP0B8R', {
+      page_title: 'Hitch — Pagina de Vendas',
+      page_location: window.location.href
+    });
+
+    // Helper: disparar evento GA4 + Meta Pixel simultaneamente
+    function trackEvent(eventName, params) {
+      // GA4
+      gtag('event', eventName, params || {});
+      // Meta Pixel
+      if (typeof fbq === 'function') {
+        var fbMap = {
+          'view_sales_page':  function(){ fbq('track', 'ViewContent', { content_name: 'Hitch PDV' }); },
+          'cta_click':        function(){ fbq('track', 'InitiateCheckout', { content_name: 'Hitch', currency: 'BRL', value: 24.90 }); },
+          'scroll_50':        function(){ fbq('trackCustom', 'Scroll50'); },
+          'scroll_75':        function(){ fbq('trackCustom', 'Scroll75'); },
+          'faq_open':         function(){ fbq('trackCustom', 'FAQOpen'); },
+          'offer_view':       function(){ fbq('track', 'AddToCart', { content_name: 'Hitch', currency: 'BRL', value: 24.90 }); },
+        };
+        if (fbMap[eventName]) fbMap[eventName]();
+      }
+    }
+
+    // Evento de view
+    window.addEventListener('DOMContentLoaded', function() {
+      trackEvent('view_sales_page', { page: 'hitch_pdv' });
+    });
+
+    // Scroll depth tracking
+    var scrollFired = { 25: false, 50: false, 75: false, 90: false };
+    window.addEventListener('scroll', function() {
+      var pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      [25, 50, 75, 90].forEach(function(d) {
+        if (pct >= d && !scrollFired[d]) {
+          scrollFired[d] = true;
+          trackEvent('scroll_' + d, { percent: d });
+        }
+      });
+    }, { passive: true });
+
+    // CTA click tracking — todos os botões Kiwify
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('a[href*="kiwify"]');
+      if (btn) {
+        var loc = btn.closest('section') ? btn.closest('section').className : 'unknown';
+        trackEvent('cta_click', { button_location: loc, destination: 'kiwify' });
+      }
+    });
+
+    // FAQ accordion tracking
+    document.addEventListener('click', function(e) {
+      var faqBtn = e.target.closest('.faq-pergunta');
+      if (faqBtn) {
+        trackEvent('faq_open', { question: faqBtn.textContent.trim().slice(0, 60) });
+      }
+    });
+  </script>
+
+  <!-- ═══ META PIXEL ════════════════════════════════════════════════ -->
+  <!-- PLACEHOLDER — substituir META_PIXEL_ID pelo ID real           -->
+  <!--
+  <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'META_PIXEL_ID');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=META_PIXEL_ID&ev=PageView&noscript=1"/></noscript>
+  -->
+  <!-- FIM META PIXEL -->
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --verde:        #25D366;
+      --verde-escuro: #1aad52;
+      --verde-glow:   rgba(37, 211, 102, 0.18);
+      --preto:        #080c08;
+      --surface-1:    #0f150f;
+      --surface-2:    #151d15;
+      --surface-3:    #1c261c;
+      --borda:        rgba(37,211,102,0.12);
+      --borda-forte:  rgba(37,211,102,0.3);
+      --texto:        #e2e8e2;
+      --texto-muted:  #8a9e8a;
+      --dourado:      #F5C842;
+      --vermelho:     #FF3B30;
+      --branco:       #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--preto);
+      color: var(--texto);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .hero-logo, .badge, .cta-btn {
+      font-family: 'Sora', sans-serif;
+    }
+
+    /* -- BARRA DE URGENCIA ---------------------------------------- */
+    @keyframes urgencia-shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(255,59,48,0.6); }
+      50%       { opacity: 0.85; transform: scale(1.15); box-shadow: 0 0 0 4px rgba(255,59,48,0); }
+    }
+    @keyframes vagas-blink {
+      0%, 90%, 100% { opacity: 1; }
+      95%            { opacity: 0.5; }
+    }
+
+    .urgencia-topo {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: #0d0d0d;
+      border-bottom: 1px solid rgba(255,59,48,0.18);
+      overflow: hidden;
+    }
+
+    .urgencia-topo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        transparent 25%,
+        rgba(255,59,48,0.04) 50%,
+        transparent 75%
+      );
+      background-size: 400px 100%;
+      animation: urgencia-shimmer 3.5s linear infinite;
+      pointer-events: none;
+    }
+
+    .urgencia-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 20px;
+      position: relative;
+    }
+
+    .urgencia-topo .dot {
+      width: 8px; height: 8px;
+      background: #ff3b30;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+
+    .urgencia-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .urgencia-sep {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    .urgencia-msg {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.01em;
+    }
+
+    .vagas-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,59,48,0.15);
+      border: 1px solid rgba(255,59,48,0.4);
+      border-radius: 5px;
+      padding: 1px 7px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: #ff6b63;
+      font-variant-numeric: tabular-nums;
+      animation: vagas-blink 4s ease-in-out infinite;
+      min-width: 28px;
+      text-align: center;
+    }
+
+    .urgencia-cta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,59,48,0.12);
+      border: 1px solid rgba(255,59,48,0.25);
+      border-radius: 20px;
+      padding: 3px 10px 3px 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: 'Sora', sans-serif;
+      color: #ff9f9a;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .urgencia-cta-pill:hover { background: rgba(255,59,48,0.22); }
+    .urgencia-cta-pill svg { flex-shrink: 0; }
+
+    /* -- HERO --------------------------------------------------- */
+    .hero {
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(37,211,102,0.07) 0%, transparent 70%),
+                  var(--preto);
+      padding: 72px 20px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 80%, rgba(37,211,102,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(37,211,102,0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-mark { width: 64px; height: 64px; margin-bottom: 14px; }
+
+    .hero-logo {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--verde);
+      letter-spacing: 5px;
+      text-transform: uppercase;
+    }
+
+    .hero-tagline {
+      font-size: 11px;
+      color: var(--texto-muted);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5.5vw, 52px);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+      letter-spacing: -0.5px;
+    }
+
+    .hero h1 em { font-style: normal; color: var(--verde); }
+
+    .hero-sub {
+      font-size: clamp(16px, 2.2vw, 20px);
+      color: var(--texto-muted);
+      max-width: 640px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+
+    .hero-conditions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px 18px;
+      margin-bottom: 36px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-conditions span {
+      font-size: 13.5px;
+      color: var(--verde);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .hero-alert {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,59,48,0.08);
+      border: 1px solid rgba(255,59,48,0.25);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 13.5px;
+      color: #ff8a85;
+      margin-bottom: 36px;
+    }
+
+    /* -- BOTAO CTA ------------------------------------------------- */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-escuro) 100%);
+      color: var(--preto);
+      font-size: clamp(15px, 2vw, 18px);
+      font-weight: 800;
+      padding: 19px 48px;
+      border-radius: 50px;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      transition: all 0.22s ease;
+      box-shadow: 0 8px 40px rgba(37,211,102,0.28), 0 2px 0 rgba(255,255,255,0.15) inset;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 56px rgba(37,211,102,0.42), 0 2px 0 rgba(255,255,255,0.15) inset;
+    }
+
+    .cta-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+    .cta-sub {
+      font-size: 12.5px;
+      color: var(--texto-muted);
+      margin-top: 14px;
+    }
+
+    /* -- TRUST BAR ------------------------------------------------ */
+    .trust-bar {
+      background: var(--surface-1);
+      border-top: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
+      padding: 18px 20px;
+    }
+
+    .trust-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--texto-muted);
+    }
+
+    .trust-item span.icon { font-size: 16px; }
+
+    /* -- SECOES GERAIS --------------------------------------------- */
+    .secao {
+      padding: 80px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .secao-titulo {
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 900;
+      margin-bottom: 40px;
+      line-height: 1.2;
+      letter-spacing: -0.3px;
+    }
+
+    .secao-titulo em { font-style: normal; color: var(--verde); }
+
+    .secao-texto {
+      font-size: 16.5px;
+      color: var(--texto-muted);
+      margin-bottom: 20px;
+      line-height: 1.85;
+    }
+
+    .destaque-box {
+      background: linear-gradient(135deg, rgba(37,211,102,0.06) 0%, rgba(37,211,102,0.02) 100%);
+      border-left: 3px solid var(--verde);
+      padding: 22px 28px;
+      border-radius: 0 10px 10px 0;
+      margin: 32px 0;
+      font-size: 18px;
+      font-style: italic;
+      color: var(--texto);
+      line-height: 1.7;
+    }
+
+    .destaque-box-red {
+      background: linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.02) 100%);
+      border-left: 3px solid var(--vermelho);
+      padding: 22px 28px;
+      border-radius: 0 10px 10px 0;
+      margin: 32px 0;
+      font-size: 18px;
+      font-style: italic;
+      color: #ff9f9a;
+      line-height: 1.7;
+    }
+
+    .erro-lista {
+      list-style: none;
+      margin: 28px 0;
+    }
+
+    .erro-lista li {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 15.5px;
+      color: var(--texto-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      line-height: 1.65;
+    }
+
+    .erro-lista li::before {
+      content: '\2715';
+      color: var(--vermelho);
+      font-weight: 900;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .check-lista {
+      list-style: none;
+      margin: 28px 0;
+    }
+
+    .check-lista li {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 15.5px;
+      color: var(--texto);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      line-height: 1.65;
+    }
+
+    .check-lista li::before {
+      content: '\2713';
+      color: var(--verde);
+      font-weight: 900;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* -- CARTA ABERTA --------------------------------------------- */
+    .carta-section {
+      background: var(--surface-1);
+      border-top: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
+      padding: 72px 20px;
+    }
+
+    .carta-inner {
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    .carta-content {
+      min-width: 0;
+    }
+
+    .carta-inner p {
+      font-size: 17px;
+      color: var(--texto-muted);
+      line-height: 1.9;
+      margin-bottom: 22px;
+    }
+
+    .carta-inner p strong {
+      color: var(--texto);
+      font-weight: 700;
+    }
+
+    .carta-inner p em {
+      font-style: normal;
+      color: var(--verde);
+    }
+
+    .carta-assinatura {
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid var(--borda);
+      font-size: 14px;
+      color: var(--texto-muted);
+      font-style: italic;
+    }
+
+    /* -- METODO -------------------------------------------------- */
+    .metodo-section {
+      background: var(--surface-1);
+      border-top: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
+      padding: 80px 20px;
+    }
+
+    .metodo-inner { max-width: 800px; margin: 0 auto; }
+
+    .badge {
+      display: inline-block;
+      background: var(--verde-glow);
+      color: var(--verde);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      border: 1px solid var(--borda-forte);
+    }
+
+    .fases-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 40px 0;
+    }
+
+    .fase-card {
+      background: var(--surface-2);
+      border-radius: 14px;
+      padding: 28px 32px;
+      border: 1px solid var(--borda);
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+
+    .fase-card:hover { border-color: var(--borda-forte); }
+
+    .fase-numero {
+      background: linear-gradient(135deg, var(--verde) 0%, var(--verde-escuro) 100%);
+      color: var(--preto);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      flex-shrink: 0;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .fase-titulo {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: var(--verde);
+      font-family: 'Sora', sans-serif;
+    }
+
+    .fase-texto {
+      font-size: 15px;
+      color: var(--texto-muted);
+      line-height: 1.75;
+    }
+
+    /* -- VS SECTION ---------------------------------------------- */
+    .vs-section {
+      padding: 80px 20px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* -- VS CARDS (substitui tabela) ----------------------------- */
+    .vs-cards {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .vs-item {
+      background: var(--surface-1);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .vs-dimensao {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--texto-muted);
+      margin: 0 0 14px 0;
+    }
+
+    .vs-versus-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .vs-lado {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 10px 14px;
+      border-radius: 10px;
+    }
+
+    .vs-nao {
+      background: rgba(255,255,255,0.02);
+      color: rgba(255,255,255,0.3);
+      text-decoration: line-through;
+      text-decoration-color: rgba(255,255,255,0.15);
+    }
+
+    .vs-sim {
+      background: rgba(37,211,102,0.07);
+      color: var(--texto);
+      font-weight: 600;
+      border: 1px solid rgba(37,211,102,0.15);
+    }
+
+    .vs-x {
+      font-size: 13px;
+      color: rgba(255,80,80,0.5);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .vs-check {
+      font-size: 13px;
+      color: var(--verde);
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-weight: 900;
+    }
+
+    @media (min-width: 540px) {
+      .vs-versus-row { flex-direction: row; }
+      .vs-lado { flex: 1; }
+    }
+
+    /* -- CAPTIONS DE IMAGEM ------------------------------------- */
+    .hero-image-caption {
+      position: absolute;
+      bottom: 16px;
+      left: 0; right: 0;
+      z-index: 2;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-style: italic;
+      color: rgba(255,255,255,0.65);
+      padding: 0 24px;
+      line-height: 1.5;
+    }
+    .mockup-caption {
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--texto-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+    .garantia-caption {
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--texto-muted);
+      margin-top: 16px;
+      line-height: 1.6;
+      font-style: italic;
+    }
+    /* ── Imagem full-break entre seções ─────────────────────── */
+    .img-full-break {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 0 8px;
+    }
+    .img-full-break img {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    }
+    .img-break-caption {
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-style: italic;
+      color: rgba(255,255,255,0.45);
+      margin-top: 12px;
+      padding: 0 20px;
+      line-height: 1.5;
+    }
+    .garantia-img-wrap {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto 32px;
+    }
+    .garantia-img-wrap img {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+    }
+
+    .img-hesitacao {
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+      padding: 40px 16px 0;
+    }
+    .img-hesitacao img {
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    }
+    .img-hesitacao-caption {
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-style: italic;
+      color: rgba(255,255,255,0.5);
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    /* -- REVEAL ON SCROLL --------------------------------------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.7s cubic-bezier(0.16,1,0.3,1);
+      will-change: opacity, transform;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* -- HIGHLIGHT GLOW ---------------------------------------- */
+    .highlight-reveal { position: relative; display: inline; }
+    .highlight-reveal::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0;
+      width: 0; height: 2px;
+      background: linear-gradient(90deg, var(--verde), rgba(37,211,102,0.3));
+      border-radius: 2px;
+      transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+    }
+    .highlight-reveal.glow::after { width: 100%; }
+    .highlight-reveal.glow { text-shadow: 0 0 20px rgba(37,211,102,0.15); }
+
+    /* -- CTA PULSE --------------------------------------------- */
+    @keyframes cta-glow-pulse {
+      0%,100% { box-shadow: 0 6px 32px rgba(37,211,102,0.25), 0 0 0 0 rgba(37,211,102,0.2); }
+      50%      { box-shadow: 0 6px 40px rgba(37,211,102,0.4),  0 0 0 6px rgba(37,211,102,0); }
+    }
+    .cta-btn.in-view { animation: cta-glow-pulse 2.5s ease-in-out infinite; }
+
+    /* -- GRADIENT SEPARATOR ------------------------------------ */
+    .carta-section, .mecanismo-section, .prova-section { position: relative; }
+    .carta-section::before, .mecanismo-section::before, .prova-section::before {
+      content: '';
+      position: absolute;
+      top: -40px; left: 0; right: 0;
+      height: 40px;
+      background: linear-gradient(to bottom, transparent, var(--surface-1));
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* -- PROVA SOCIAL -------------------------------------------- */
+    .prova-section {
+      background: var(--surface-1);
+      border-top: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
+      padding: 80px 20px;
+    }
+
+    .prova-inner { max-width: 800px; margin: 0 auto; }
+
+    .depo-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: 40px 0;
+    }
+
+    @media (min-width: 600px) {
+      .depo-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .depo-card {
+      background: var(--surface-2);
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 28px;
+      position: relative;
+    }
+
+    .depo-stars {
+      color: var(--dourado);
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+
+    .depo-texto {
+      font-size: 15px;
+      color: var(--texto-muted);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .depo-autor {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .depo-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--surface-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .depo-nome {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--texto);
+    }
+
+    .depo-detalhe {
+      font-size: 12px;
+      color: var(--texto-muted);
+    }
+
+    /* -- OFERTA -------------------------------------------------- */
+    .oferta-section {
+      padding: 80px 20px;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .oferta-card {
+      background: var(--surface-1);
+      border: 1px solid var(--borda-forte);
+      border-radius: 24px;
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .oferta-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--verde), transparent);
+    }
+
+    .oferta-badge {
+      display: inline-block;
+      background: rgba(37,211,102,0.15);
+      color: var(--verde);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 20px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      border: 1px solid var(--borda-forte);
+    }
+
+    .oferta-nome {
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 900;
+      margin-bottom: 8px;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .oferta-desc {
+      font-size: 15px;
+      color: var(--texto-muted);
+      margin-bottom: 32px;
+    }
+
+    .preco-antigo {
+      font-size: 15px;
+      color: var(--texto-muted);
+      text-decoration: line-through;
+      margin-bottom: 4px;
+    }
+
+    .preco-atual {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .preco-prefixo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--verde);
+      font-family: 'Sora', sans-serif;
+    }
+
+    .preco-valor {
+      font-size: clamp(48px, 8vw, 72px);
+      font-weight: 900;
+      color: var(--verde);
+      line-height: 1;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .preco-centavos {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--verde);
+      font-family: 'Sora', sans-serif;
+    }
+
+    .preco-periodo {
+      font-size: 14px;
+      color: var(--texto-muted);
+      margin-bottom: 32px;
+    }
+
+    .oferta-itens {
+      list-style: none;
+      text-align: left;
+      margin: 0 0 36px;
+    }
+
+    .oferta-itens li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--borda);
+      font-size: 14.5px;
+      color: var(--texto);
+    }
+
+    .oferta-itens li:last-child { border-bottom: none; }
+
+    .oferta-itens li::before {
+      content: '\2713';
+      color: var(--verde);
+      font-weight: 900;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    /* -- BULLET DE IMPACTO --------------------------------------- */
+    .impacto-section {
+      padding: 60px 20px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .impacto-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .impacto-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--borda);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+
+    .impacto-check {
+      font-size: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .impacto-titulo {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--texto);
+      margin-bottom: 6px;
+    }
+
+    .impacto-desc {
+      font-size: 14px;
+      color: var(--texto-muted);
+      line-height: 1.6;
+    }
+
+    /* -- OBJEÇÕES EM CARDS --------------------------------------- */
+    .obj-section {
+      padding: 60px 20px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .obj-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .obj-pair {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .obj-pergunta {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--texto);
+    }
+
+    .obj-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .obj-card {
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .obj-problema {
+      background: #FFE5E5;
+      color: #7a1a1a;
+    }
+
+    .obj-solucao {
+      background: #E6FFEA;
+      color: #1a5c28;
+    }
+
+    @media (max-width: 480px) {
+      .obj-cards { grid-template-columns: 1fr; }
+    }
+
+
+    /* -- PRINTS WHATSAPP CAROUSEL -------------------------------- */
+    .wprint-carousel-wrap {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+
+    .wprint-carousel {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 8px 4px 16px;
+      cursor: grab;
+    }
+
+    .wprint-carousel::-webkit-scrollbar { display: none; }
+
+    .wprint-carousel.grabbing { cursor: grabbing; }
+
+    .wprint-item {
+      flex: 0 0 280px;
+      scroll-snap-align: center;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 8px 32px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(255,255,255,0.06);
+      transition: transform 0.2s ease;
+    }
+
+    .wprint-item:hover { transform: translateY(-4px); }
+
+    .wprint-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+    }
+
+    .wprint-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .wprint-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--borda-forte);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .wprint-dot.active {
+      width: 20px;
+      border-radius: 3px;
+      background: var(--verde);
+    }
+
+    @media (min-width: 600px) {
+      .wprint-item { flex: 0 0 320px; }
+    }
+
+    /* -- GARANTIA ------------------------------------------------ */
+    .garantia-section {
+      padding: 60px 20px;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .garantia-box {
+      background: linear-gradient(135deg, rgba(37,211,102,0.05) 0%, transparent 100%);
+      border: 1px solid var(--borda-forte);
+      border-radius: 20px;
+      padding: 40px 32px;
+    }
+
+    .garantia-icon {
+      font-size: 56px;
+      margin-bottom: 20px;
+    }
+
+    .garantia-titulo {
+      font-size: clamp(22px, 3.5vw, 30px);
+      font-weight: 900;
+      margin-bottom: 16px;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .garantia-texto {
+      font-size: 16px;
+      color: var(--texto-muted);
+      line-height: 1.8;
+    }
+
+    /* -- FAQ ----------------------------------------------------- */
+    .faq-section {
+      padding: 80px 20px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--borda);
+    }
+
+    .faq-pergunta {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--texto);
+      text-align: left;
+      padding: 22px 0;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      font-family: 'Sora', sans-serif;
+      transition: color 0.2s;
+    }
+
+    .faq-pergunta:hover { color: var(--verde); }
+
+    .faq-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--verde-glow);
+      border: 1px solid var(--borda-forte);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+
+    .faq-icon svg { width: 12px; height: 12px; fill: var(--verde); }
+
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+    .faq-resposta {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .faq-item.open .faq-resposta { max-height: 400px; }
+
+    .faq-resposta p {
+      font-size: 15.5px;
+      color: var(--texto-muted);
+      line-height: 1.8;
+      padding-bottom: 22px;
+    }
+
+    /* -- FOOTER ------------------------------------------------- */
+    .footer {
+      background: var(--surface-1);
+      border-top: 1px solid var(--borda);
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--verde);
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .footer-texto {
+      font-size: 13px;
+      color: var(--texto-muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 12.5px;
+      color: var(--texto-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--verde); }
+
+    /* -- MOCKUP SECTION ----------------------------------------- */
+    .mockup-section {
+      padding: 0px 20px 80px;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .mockup-wrapper {
+      position: relative;
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    .mockup-wrapper img {
+      width: 100%;
+      max-width: 680px;
+      border-radius: 20px;
+      box-shadow:
+        0 32px 80px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(37,211,102,0.08);
+    }
+
+    /* -- MECANISMO ---------------------------------------------- */
+    .mecanismo-section {
+      background: var(--surface-1);
+      border-top: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
+      padding: 80px 20px;
+    }
+
+    .mecanismo-inner { max-width: 800px; margin: 0 auto; }
+
+    .mecanism-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin: 40px 0;
+    }
+
+    @media (min-width: 560px) {
+      .mecanism-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .mecanism-card {
+      background: var(--surface-2);
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 28px 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .mecanism-card:hover {
+      border-color: var(--borda-forte);
+      transform: translateY(-2px);
+    }
+
+    .mecanism-icon {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    .mecanism-titulo {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: var(--verde);
+      font-family: 'Sora', sans-serif;
+    }
+
+    .mecanism-texto {
+      font-size: 14.5px;
+      color: var(--texto-muted);
+      line-height: 1.75;
+    }
+
+    /* -- HESITACAO SECTION -------------------------------------- */
+    .hesitacao-section {
+      padding: 80px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* -- URGENCIA FINAL ----------------------------------------- */
+    .urgencia-final {
+      background: linear-gradient(135deg, rgba(255,59,48,0.05) 0%, transparent 100%);
+      border-top: 1px solid rgba(255,59,48,0.12);
+      border-bottom: 1px solid rgba(255,59,48,0.12);
+      padding: 56px 20px;
+      text-align: center;
+    }
+
+    .urgencia-final-inner { max-width: 560px; margin: 0 auto; }
+
+    .urgencia-final h2 {
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 900;
+      margin-bottom: 16px;
+      color: #ff8a85;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .urgencia-final p {
+      font-size: 16px;
+      color: var(--texto-muted);
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    /* -- MISC --------------------------------------------------- */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--borda-forte), transparent);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* -- COUNTDOWN TIMER ---------------------------------------- */
+    .countdown-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,59,48,0.1);
+      border: 1px solid rgba(255,59,48,0.25);
+      border-radius: 6px;
+      padding: 2px 8px;
+    }
+    .countdown-digits {
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: #ff6b63;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+    }
+
+    /* -- INTER-CTA (after mecanismo / after prova) --------------- */
+    .inter-cta {
+      padding: 48px 20px;
+      text-align: center;
+      background: linear-gradient(180deg, transparent, rgba(37,211,102,0.03) 50%, transparent);
+    }
+    .inter-cta-inner {
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .inter-cta-text {
+      font-size: 15px;
+      color: var(--texto-muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .inter-cta-text strong { color: var(--texto); }
+
+    /* -- STICKY MOBILE CTA -------------------------------------- */
+    .sticky-cta-bar {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 500;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(8,12,8,0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--borda);
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .sticky-cta-bar.visible {
+      display: block;
+      transform: translateY(0);
+    }
+    .sticky-cta-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: var(--verde);
+      color: #000;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
+    }
+    .sticky-cta-btn:active { transform: scale(0.98); }
+    .sticky-cta-price {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.75;
+      font-family: 'Inter', sans-serif;
+    }
+
+    @media (min-width: 768px) {
+      .sticky-cta-bar { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ URGENCIA TOPO ═══════════════════════════════════════════ -->
+  <div class="urgencia-topo" id="urgenciaTopo">
+    <div class="urgencia-inner">
+      <span class="dot"></span>
+      <span class="urgencia-msg">Oferta expira em&nbsp;</span>
+      <span class="countdown-wrap"><span class="countdown-digits" id="countdownDisplay">--:--</span></span>
+    </div>
+  </div>
+
+  <!-- ═══ HERO ════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-brand">
+      <svg class="logo-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <rect width="64" height="64" rx="16" fill="#111"/>
+        <path d="M12 16 C12 13.8 13.8 12 16 12 L48 12 C50.2 12 52 13.8 52 16 L52 38 C52 40.2 50.2 42 48 42 L36 42 L28 52 L28 42 L16 42 C13.8 42 12 40.2 12 38 Z" fill="#1a1a1a" stroke="#25d366" stroke-width="2.4"/>
+        <path d="M32 35 C32 35 21 27.6 21 22.4 C21 19.6 23.2 17.6 26 17.6 C28 17.6 29.6 18.6 30.6 20 L32 21.8 L33.4 20 C34.4 18.6 36 17.6 38 17.6 C40.8 17.6 43 19.6 43 22.4 C43 27.6 32 35 32 35Z" fill="#25d366"/>
+      </svg>
+      <span class="hero-logo">Hitch</span>
+      <span class="hero-tagline">Conselheiro Amoroso IA</span>
+    </div>
+
+    <h1 class="reveal">
+      A mensagem certa pode fazer alguém<br>
+      voltar a se interessar por você.<br>
+      <em>A errada pode afastar de vez.</em>
+    </h1>
+
+    <p class="hero-sub reveal">
+      Descubra exatamente o que responder em qualquer situação, sem parecer carente, sem agir por impulso e sem estragar tudo.
+    </p>
+
+    <div class="hero-conditions reveal">
+      <span>✦ Funciona no WhatsApp</span>
+      <span>✦ Resposta em segundos</span>
+      <span>✦ Sem julgamentos</span>
+      <span>✦ 24h por dia</span>
+    </div>
+
+    <div class="hero-alert reveal">
+      <span>⚡</span>
+      <span>Preço de lançamento — R$&nbsp;24,90/mês · Cancele quando quiser</span>
+    </div>
+
+    <a href="https://pay.kiwify.com.br/bOqFnnl" class="cta-btn reveal" id="heroCta">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      Quero a resposta certa antes de mandar mensagem →
+    </a>
+    <p class="cta-sub reveal">Acesso imediato · Cancele quando quiser · 7 dias de garantia</p>
+  </section>
+
+  <!-- ═══ TRUST BAR ════════════════════════════════════════════════ -->
+  <div class="trust-bar">
+    <div class="trust-inner">
+      <div class="trust-item"><span class="icon">🔒</span> Pagamento seguro</div>
+      <div class="trust-item"><span class="icon">⚡</span> Acesso imediato</div>
+      <div class="trust-item"><span class="icon">↩️</span> 7 dias de garantia</div>
+      <div class="trust-item"><span class="icon">📱</span> 100% no WhatsApp</div>
+    </div>
+  </div>
+
+  <!-- ═══ CARTA ABERTA ══════════════════════════════════════════════ -->
+  <section class="carta-section">
+    <div class="carta-inner">
+      <div class="carta-content">
+        <h2 class="secao-titulo reveal">
+          Você sabe exatamente<br>como funciona.
+        </h2>
+
+        <p class="reveal">
+          Bate a ansiedade. Você pega o celular. Manda aquela mensagem que parecia boa na hora, o textão, a indireta, o "precisamos conversar".
+        </p>
+
+        <p class="reveal">
+          Cinco minutos depois vem o arrependimento. Você relê e pensa: <em>por que eu fiz isso?</em>
+        </p>
+
+        <p class="reveal">
+          E o pior, cada vez que você age no impulso, a outra pessoa se afasta mais.
+        </p>
+
+        <p class="reveal">
+          Você entra num ciclo: ansiedade, impulso, arrependimento, silêncio. E a cada volta, a distância aumenta.
+        </p>
+
+        <div class="destaque-box-red reveal">
+          Uma mensagem errada hoje pode ser o motivo de você nunca mais ter essa pessoa do mesmo jeito.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MECANISMO ════════════════════════════════════════════════ -->
+  <section class="mecanismo-section">
+    <div class="mecanismo-inner">
+      <div class="badge">Como o Hitch funciona</div>
+      <h2 class="secao-titulo reveal">
+        O Hitch usa o <em>Mapeamento Comportamental Duplo</em>.
+      </h2>
+
+      <p class="secao-texto reveal">
+        Antes de te dar qualquer conselho, ele analisa duas coisas ao mesmo tempo: <strong>seu comportamento</strong> e o da pessoa que você quer conquistar ou reconquistar.
+      </p>
+
+      <p class="secao-texto reveal">
+        Baseado em padrões reais de comportamento humano, ele identifica sinais que a maioria das pessoas ignora — como perda de interesse, testes emocionais, <strong>timing errado</strong> e mudanças sutis no nível de atração.
+      </p>
+
+      <p class="secao-texto reveal">
+        Você pode enviar conversas completas, prints ou até exportar o histórico inteiro. O Hitch não analisa só uma mensagem isolada. Ele entende o <strong>contexto</strong>, o histórico e a evolução da interação.
+      </p>
+
+      <p class="secao-texto reveal">
+        Ele não te dá uma resposta <strong>genérica</strong>. Ele te diz exatamente o que responder baseado no que realmente está acontecendo ali.
+      </p>
+
+      <p class="secao-texto reveal">
+        Além disso, ele sugere respostas que você realmente seria capaz de enviar. Ele considera sua personalidade, seu jeito de se comunicar e seu nível de abertura. Não adianta parecer ideal. Precisa ser <strong>natural</strong>.
+      </p>
+
+      <p class="secao-texto reveal">
+        Quanto mais contexto você envia, mais preciso ele se torna.
+      </p>
+
+      <div class="destaque-box reveal">
+        🔒 100% privado e seguro — suas conversas não são compartilhadas ou expostas.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ INTER-CTA (pós mecanismo) ══════════════════════════════════ -->
+  <div class="inter-cta">
+    <div class="inter-cta-inner">
+      <p class="inter-cta-text">
+        Chega de ficar travado sem saber o que responder.<br>
+        <strong>Cole a conversa. O Hitch te diz o que fazer.</strong>
+      </p>
+      <a href="https://pay.kiwify.com.br/bOqFnnl" class="cta-btn reveal" id="mecCta">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.444h.005c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411"/></svg>
+        Quero o Hitch agora
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ PROVA SOCIAL ══════════════════════════════════════════════ -->
+  <section class="prova-section">
+    <div class="prova-inner">
+      <div class="badge">Quem já usa</div>
+      <h2 class="secao-titulo reveal">
+        O que está acontecendo com<br>
+        <em>quem usa antes de responder:</em>
+      </h2>
+      <p class="secao-texto reveal" style="text-align:center;margin-bottom:32px;">
+        Deslize para o lado e veja o que estão falando depois de usar
+      </p>
+
+      <div class="wprint-carousel-wrap reveal">
+        <div class="wprint-carousel" id="wprintCarousel">
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-01-pedro.png" alt="Print Pedro" loading="lazy" />
+        </div>
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-02-ju.png" alt="Print Ju" loading="lazy" />
+        </div>
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-03-rafa.png" alt="Print Rafa" loading="lazy" />
+        </div>
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-04-carol.png" alt="Print Carol" loading="lazy" />
+        </div>
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-05-lucas.png" alt="Print Lucas" loading="lazy" />
+        </div>
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-06-thi.png" alt="Print Thi" loading="lazy" />
+        </div>
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-07-gui.png" alt="Print Gui" loading="lazy" />
+        </div>
+        <div class="wprint-item">
+          <img src="https://s3.us-east-1.amazonaws.com/cdn.digital-ai.tech/uploads/media-cortex/hitch/prints/print-08-mari.png" alt="Print Mari" loading="lazy" />
+        </div>
+        </div>
+        <div class="wprint-dots" id="wprintDots"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ INTER-CTA (pós prova) ══════════════════════════════════════ -->
+  <div class="inter-cta">
+    <div class="inter-cta-inner">
+      <p class="inter-cta-text">
+        Essas conversas estão acontecendo agora.<br>
+        <strong>Você pode ser o próximo — por menos que uma pizza.</strong>
+      </p>
+      <a href="https://pay.kiwify.com.br/bOqFnnl" class="cta-btn reveal" id="provaCta">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.444h.005c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411"/></svg>
+        Quero o Hitch agora
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══ BULLET DE IMPACTO ════════════════════════════════════════ -->
+  <section class="impacto-section">
+    <div class="impacto-inner">
+      <div class="impacto-item reveal">
+        <span class="impacto-check">✅</span>
+        <div>
+          <p class="impacto-titulo">Respostas que funcionam sem você precisar fingir ser outra pessoa</p>
+          <p class="impacto-desc">O Hitch ajusta cada sugestão ao seu jeito de falar, para que você não precise forçar um comportamento que não combina com você.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ OBJEÇÕES ══════════════════════════════════════════════════ -->
+  <section class="obj-section">
+    <div class="obj-inner">
+
+      <div class="obj-pair reveal">
+        <p class="obj-pergunta">❓ E se eu continuar errando sem perceber?</p>
+        <div class="obj-cards">
+          <div class="obj-card obj-problema">Você acha que está indo bem, mas erra no impulso.</div>
+          <div class="obj-card obj-solucao">Você pergunta antes e evita erros invisíveis.</div>
+        </div>
+      </div>
+
+      <div class="obj-pair reveal">
+        <p class="obj-pergunta">❓ E se a pessoa estiver perdendo interesse?</p>
+        <div class="obj-cards">
+          <div class="obj-card obj-problema">Você tenta puxar assunto e piora.</div>
+          <div class="obj-card obj-solucao">Você ajusta e reacende o interesse.</div>
+        </div>
+      </div>
+
+      <div class="obj-pair reveal">
+        <p class="obj-pergunta">❓ E se eu mandar algo errado?</p>
+        <div class="obj-cards">
+          <div class="obj-card obj-problema">Depois que envia, já era.</div>
+          <div class="obj-card obj-solucao">Você sabe antes o que funciona.</div>
+        </div>
+      </div>
+
+      <div class="obj-pair reveal">
+        <p class="obj-pergunta">❓ Isso é genérico?</p>
+        <div class="obj-cards">
+          <div class="obj-card obj-problema">Conselhos comuns não funcionam.</div>
+          <div class="obj-card obj-solucao">Aqui é baseado na sua conversa real.</div>
+        </div>
+      </div>
+
+      <div class="obj-pair reveal">
+        <p class="obj-pergunta">❓ E minha privacidade?</p>
+        <div class="obj-cards">
+          <div class="obj-card obj-problema">Medo de expor tudo.</div>
+          <div class="obj-card obj-solucao">100% privado e seguro.</div>
+        </div>
+      </div>
+
+      <div class="obj-pair reveal">
+        <p class="obj-pergunta">❓ E se não for meu estilo?</p>
+        <div class="obj-cards">
+          <div class="obj-card obj-problema">Forçar comportamento soa estranho.</div>
+          <div class="obj-card obj-solucao">Tudo respeita sua personalidade.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ OFERTA ═══════════════════════════════════════════════════ -->
+  <section class="oferta-section" id="oferta">
+    <div class="oferta-card reveal">
+      <div class="oferta-badge">Oferta de Lançamento</div>
+      <h2 class="oferta-nome">Hitch — Plano Mensal</h2>
+      <p class="oferta-desc">Seu conselheiro amoroso 24h no WhatsApp</p>
+
+      <p class="secao-texto reveal" style="margin-bottom:28px;color:var(--texto-muted);font-size:15px;line-height:1.7;">Menos que uma pizza, mas pode salvar uma situação que você não consegue resolver sozinho.</p>
+
+      <p class="preco-antigo">De R$ 49,90/mês</p>
+      <div class="preco-atual">
+        <span class="preco-prefixo">R$</span>
+        <span class="preco-valor">24</span>
+        <span class="preco-centavos">,90</span>
+      </div>
+      <p class="preco-periodo">por mês · cancele quando quiser</p>
+
+      <p class="secao-texto reveal" style="margin-bottom:28px;color:var(--texto-muted);font-size:15px;line-height:1.7;">
+        Você não está pagando por um app. Está pagando para não errar no momento mais importante.
+      </p>
+
+      <ul class="oferta-itens">
+        <li>Acesso ilimitado ao Hitch no WhatsApp</li>
+        <li>Análise de conversas em tempo real</li>
+        <li>Sugestões de resposta personalizadas</li>
+        <li>Disponível 24h, 7 dias por semana</li>
+        <li>Sem julgamentos, sem fofoca</li>
+        <li>7 dias de garantia total</li>
+      </ul>
+
+      <a href="https://pay.kiwify.com.br/bOqFnnl" class="cta-btn" id="ofertaCta" style="width:100%;justify-content:center;">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Quero a resposta certa antes de mandar mensagem →
+      </a>
+      <p class="cta-sub">Pagamento seguro via Kiwify · Acesso imediato após pagamento</p>
+    </div>
+  </section>
+
+  <!-- ═══ GARANTIA ═════════════════════════════════════════════════ -->
+  <section class="garantia-section">
+    <div class="garantia-box reveal">
+      <h3 class="garantia-titulo">Garantia de 7 dias</h3>
+      <p class="garantia-texto">
+        Use o Hitch na próxima conversa real. Se em 24h você não sentir mais clareza e segurança, devolvemos 100% do seu dinheiro.<br><br>
+        Você não paga pra testar. Você paga pra resolver. E se não resolver, o dinheiro volta.
+      </p>
+      <p class="garantia-caption">Você não tem nada a perder — e pode ter muito a ganhar.</p>
+    </div>
+  </section>
+
+  <!-- ═══ FAQ ═══════════════════════════════════════════════════════ -->
+  <section class="faq-section">
+    <h2 class="secao-titulo reveal">Perguntas frequentes</h2>
+
+    <div class="faq-item">
+      <button class="faq-pergunta">
+        Como funciona o acesso?
+        <span class="faq-icon"><svg viewBox="0 0 12 12"><path d="M6 0v12M0 6h12"/></svg></span>
+      </button>
+      <div class="faq-resposta">
+        <p>Após o pagamento, você recebe um link para adicionar o Hitch no seu WhatsApp. O acesso é imediato — em menos de 2 minutos você já pode mandar sua primeira mensagem.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-pergunta">
+        Minhas conversas ficam salvas em algum lugar?
+        <span class="faq-icon"><svg viewBox="0 0 12 12"><path d="M6 0v12M0 6h12"/></svg></span>
+      </button>
+      <div class="faq-resposta">
+        <p>O Hitch não armazena o histórico de conversas de forma permanente. Cada sessão funciona de forma independente. Você pode compartilhar os prints que quiser — ele analisa o conteúdo na hora e não mantém registro identificável.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-pergunta">
+        Funciona para qualquer tipo de situação?
+        <span class="faq-icon"><svg viewBox="0 0 12 12"><path d="M6 0v12M0 6h12"/></svg></span>
+      </button>
+      <div class="faq-resposta">
+        <p>O Hitch é especializado em relacionamentos e comunicação amorosa: reconquista, início de relacionamento, flerte, crises, conversas difíceis, interpretação de comportamentos. Ele não é um chatbot genérico — foi treinado especificamente para essas situações.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-pergunta">
+        Posso cancelar quando quiser?
+        <span class="faq-icon"><svg viewBox="0 0 12 12"><path d="M6 0v12M0 6h12"/></svg></span>
+      </button>
+      <div class="faq-resposta">
+        <p>Sim. É uma assinatura mensal sem fidelidade. Você cancela quando quiser, diretamente pela plataforma Kiwify, sem precisar falar com ninguém.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-pergunta">
+        O que acontece depois dos 7 dias de garantia?
+        <span class="faq-icon"><svg viewBox="0 0 12 12"><path d="M6 0v12M0 6h12"/></svg></span>
+      </button>
+      <div class="faq-resposta">
+        <p>Você continua com acesso pelo mês completo. A assinatura renova automaticamente todo mês, mas você pode cancelar a qualquer momento antes da renovação sem cobrança adicional.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-pergunta">
+        É realmente diferente de usar o ChatGPT?
+        <span class="faq-icon"><svg viewBox="0 0 12 12"><path d="M6 0v12M0 6h12"/></svg></span>
+      </button>
+      <div class="faq-resposta">
+        <p>Sim. O ChatGPT é generalista. O Hitch foi treinado com foco exclusivo em relacionamentos, comunicação e dinâmicas de atração. Ele sabe quando não responder é melhor, entende subtext, calibra o tom e explica o raciocínio por trás de cada conselho. É como a diferença entre perguntar para um clínico geral e para um especialista.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══ URGENCIA FINAL ════════════════════════════════════════════ -->
+  <section class="urgencia-final">
+    <div class="urgencia-final-inner">
+      <h2 class="reveal">Quanto tempo você já perdeu<br>sem saber o que responder?</h2>
+      <p class="reveal">Cada dia sem o Hitch é mais um dia de conversas travadas, ansiedade desnecessária e oportunidades perdidas.</p>
+      <a href="https://pay.kiwify.com.br/bOqFnnl" class="cta-btn reveal" id="finalCta">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Quero a resposta certa antes de mandar mensagem →
+      </a>
+      <p class="cta-sub" style="margin-top:16px;">7 dias de garantia · Cancele quando quiser · Acesso imediato</p>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-logo">Hitch</div>
+    <p class="footer-texto">
+      Hitch é um produto digital de aconselhamento amoroso via IA. Não substitui terapia, psicologia ou aconselhamento profissional. Os resultados variam conforme cada situação e pessoa.
+    </p>
+    <div class="footer-links">
+      <a href="#">Termos de Uso</a>
+      <a href="#">Política de Privacidade</a>
+      <a href="#">Suporte</a>
+    </div>
+  </footer>
+
+
+  <!-- ═══ STICKY MOBILE CTA ════════════════════════════════════════ -->
+  <div class="sticky-cta-bar" id="stickyCta">
+    <a href="https://pay.kiwify.com.br/bOqFnnl" class="sticky-cta-btn" id="stickyCtaBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.444h.005c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411"/></svg>
+      <span>Quero o Hitch agora</span>
+      <span class="sticky-cta-price">R$ 24,90</span>
+    </a>
+  </div>
+
+  <!-- ═══ SCRIPTS ═══════════════════════════════════════════════════ -->
+  <script>
+    // ── REVEAL ON SCROLL ──────────────────────────────────────────
+    (function() {
+      var els = document.querySelectorAll('.reveal');
+      if (!els.length) return;
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function(el) { io.observe(el); });
+    })();
+
+    // ── HIGHLIGHT REVEAL ─────────────────────────────────────────
+    (function() {
+      var hls = document.querySelectorAll('.highlight-reveal');
+      if (!hls.length) return;
+      var io2 = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            setTimeout(function() { e.target.classList.add('glow'); }, 300);
+            io2.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.5 });
+      hls.forEach(function(el) { io2.observe(el); });
+    })();
+
+    // ── CTA PULSE IN VIEW ─────────────────────────────────────────
+    (function() {
+      var ctaBtns = document.querySelectorAll('.cta-btn');
+      if (!ctaBtns.length) return;
+      var io3 = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) e.target.classList.add('in-view');
+          else e.target.classList.remove('in-view');
+        });
+      }, { threshold: 0.5 });
+      ctaBtns.forEach(function(btn) { io3.observe(btn); });
+    })();
+
+    // ── OFFER VIEW TRACKING ──────────────────────────────────────
+    (function() {
+      var oferta = document.getElementById('oferta');
+      if (!oferta) return;
+      var fired = false;
+      var io4 = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting && !fired) {
+            fired = true;
+            trackEvent('offer_view', { section: 'oferta' });
+          }
+        });
+      }, { threshold: 0.3 });
+      io4.observe(oferta);
+    })();
+
+
+    // ── WPRINT CAROUSEL ──────────────────────────────────────────
+    (function() {
+      var carousel = document.getElementById('wprintCarousel');
+      var dotsContainer = document.getElementById('wprintDots');
+      if (!carousel || !dotsContainer) return;
+
+      var items = carousel.querySelectorAll('.wprint-item');
+      var dots = [];
+      var activeIdx = 0;
+
+      // Create dots
+      items.forEach(function(_, i) {
+        var dot = document.createElement('span');
+        dot.className = 'wprint-dot' + (i === 0 ? ' active' : '');
+        dot.addEventListener('click', function() { scrollToItem(i); });
+        dotsContainer.appendChild(dot);
+        dots.push(dot);
+      });
+
+      function setActiveDot(idx) {
+        dots.forEach(function(d) { d.classList.remove('active'); });
+        if (dots[idx]) dots[idx].classList.add('active');
+        activeIdx = idx;
+      }
+
+      function scrollToItem(idx) {
+        var item = items[idx];
+        if (!item) return;
+        var offset = item.offsetLeft - (carousel.offsetWidth - item.offsetWidth) / 2;
+        carousel.scrollTo({ left: offset, behavior: 'smooth' });
+      }
+
+      // Update active dot on scroll
+      carousel.addEventListener('scroll', function() {
+        var center = carousel.scrollLeft + carousel.offsetWidth / 2;
+        var closest = 0;
+        var minDist = Infinity;
+        items.forEach(function(item, i) {
+          var itemCenter = item.offsetLeft + item.offsetWidth / 2;
+          var dist = Math.abs(center - itemCenter);
+          if (dist < minDist) { minDist = dist; closest = i; }
+        });
+        setActiveDot(closest);
+      }, { passive: true });
+
+      // Drag scroll
+      var isDown = false, startX = 0, scrollLeft = 0;
+      carousel.addEventListener('mousedown', function(e) {
+        isDown = true;
+        carousel.classList.add('grabbing');
+        startX = e.pageX - carousel.offsetLeft;
+        scrollLeft = carousel.scrollLeft;
+      });
+      carousel.addEventListener('mouseleave', function() { isDown = false; carousel.classList.remove('grabbing'); });
+      carousel.addEventListener('mouseup', function() { isDown = false; carousel.classList.remove('grabbing'); });
+      carousel.addEventListener('mousemove', function(e) {
+        if (!isDown) return;
+        e.preventDefault();
+        var x = e.pageX - carousel.offsetLeft;
+        carousel.scrollLeft = scrollLeft - (x - startX) * 1.2;
+      });
+    })();
+
+
+    // ── COUNTDOWN TIMER ──────────────────────────────────────────
+    (function() {
+      var KEY = 'hitch_countdown_v1';
+      var DURATION = 900; // 15 minutes in seconds
+      var el = document.getElementById('countdownDisplay');
+      if (!el) return;
+
+      var stored = sessionStorage.getItem(KEY);
+      var deadline;
+      var now = Date.now();
+
+      if (stored) {
+        deadline = parseInt(stored, 10);
+        // If already expired, reset
+        if (deadline <= now) {
+          deadline = now + DURATION * 1000;
+          sessionStorage.setItem(KEY, deadline);
+        }
+      } else {
+        // Randomize start between 12:30 and 18:50 (750 to 1130 seconds)
+        var rand = Math.floor(Math.random() * 380) + 750;
+        deadline = now + rand * 1000;
+        sessionStorage.setItem(KEY, deadline);
+      }
+
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+      function tick() {
+        var remaining = Math.max(0, Math.floor((deadline - Date.now()) / 1000));
+        var m = Math.floor(remaining / 60);
+        var s = remaining % 60;
+        el.textContent = pad(m) + ':' + pad(s);
+        if (remaining <= 0) {
+          // Reset for next round
+          deadline = Date.now() + DURATION * 1000;
+          sessionStorage.setItem(KEY, deadline);
+        }
+      }
+
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    // ── STICKY CTA BAR ────────────────────────────────────────────
+    (function() {
+      var bar = document.getElementById('stickyCta');
+      if (!bar) return;
+      var shown = false;
+
+      function checkScroll() {
+        var pct = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+        if (pct >= 0.40 && !shown) {
+          shown = true;
+          bar.classList.add('visible');
+        }
+      }
+
+      window.addEventListener('scroll', checkScroll, { passive: true });
+      checkScroll();
+    })();
+
+    // ── FAQ ACCORDION ─────────────────────────────────────────────
+    document.querySelectorAll('.faq-item').forEach(function(item) {
+      item.querySelector('.faq-pergunta').addEventListener('click', function() {
+        item.classList.toggle('open');
+      });
+    });
+  </script>
+
+</body>
+</html>
